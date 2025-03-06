@@ -1,0 +1,19 @@
+<div class="container">
+    <label class="file-input-label">
+        <input type="file" (change)="onFileSelected($event)" />
+        📷 Seleccionar imagen
+    </label>
+
+    <div class="image-preview" *ngIf="imageSrc">
+        <img [src]="imageSrc" alt="Uploaded Image" />
+    </div>
+
+    <div class="loading" *ngIf="isLoading">
+        ⏳ Analizando imagen...
+    </div>
+
+    <div class="analysis-result" *ngIf="analysisResult">
+        <h3>📌 Descripción</h3>
+        <p>{{ analysisResult }}</p>
+    </div>
+</div>
