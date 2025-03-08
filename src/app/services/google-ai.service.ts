@@ -13,9 +13,11 @@ export class GoogleAiService {
     this.genAI = new GoogleGenerativeAI(environment.googleApiKey);
   }
 
-  async analyzeImage(base64Image: string){
+  async analyzeImage(base64Image: string, modeltype: 'flash' | 'pro' = 'flash') {
     try {
-      const model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash'});
+      const model = this.genAI.getGenerativeModel({ 
+        model: modeltype === 'flash' ? 'gemini-1.5-flash' : 'gemini-1.5-pro',
+      });
 
       const imageParts = [{ inlineData: {data: base64Image, mimeType: 'image/png'}}];
       const prompt = 'Describe esta imagen de manera detallada, la descripción debe ser siempre en español';

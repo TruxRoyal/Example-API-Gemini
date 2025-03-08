@@ -1,19 +1,27 @@
 <div class="container">
     <label class="file-input-label">
-        <input type="file" (change)="onFileSelected($event)" />
-        📷 Seleccionar imagen
+        <input type="file" (change)="onFileSelected($event)" multiple />
+        📷 Seleccionar imágenes
     </label>
 
-    <div class="image-preview" *ngIf="imageSrc">
-        <img [src]="imageSrc" alt="Uploaded Image" />
+    <div class="model-selection">
+        <label for="model-select">⚙️ Seleccionar modelo:</label>
+        <select id="model-select" (change)="changeModel($event)">
+            <option value="flash">⚡ Gemini Flash</option>
+            <option value="pro">🚀 Gemini Pro</option>
+        </select>
     </div>
 
-    <div class="loading" *ngIf="isLoading">
-        ⏳ Analizando imagen...
-    </div>
-
-    <div class="analysis-result" *ngIf="analysisResult">
-        <h3>📌 Descripción</h3>
-        <p>{{ analysisResult }}</p>
+    <div class="image-list" *ngIf="images.length > 0">
+        <div class="image-item" *ngFor="let img of images">
+            <img [src]="img.src" alt="Imagen subida" />
+            <div class="loading" *ngIf="img.result === 'Analizando...'">
+                ⏳ Analizando imagen...
+            </div>
+            <div class="analysis-result" *ngIf="img.result && img.result !== 'Analizando...'">
+                <h3>📌 Descripción</h3>
+                <p>{{ img.result }}</p>
+            </div>
+        </div>
     </div>
 </div>

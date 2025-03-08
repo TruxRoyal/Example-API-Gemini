@@ -2,6 +2,10 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GoogleAiService } from '../../services/google-ai.service';
 
+interface AnalyzedImage {
+  src: string | ArrayBuffer | null;
+  result: string | null;
+}
 
 @Component({
   selector: 'app-image-analysis',
@@ -11,26 +15,42 @@ import { GoogleAiService } from '../../services/google-ai.service';
   styleUrl: './image-analysis.component.css'
 })
 export class ImageAnalysisComponent {
-  imageSrc: string | ArrayBuffer | null = null;
-  analysisResult: string | null = null;
+  images: AnalyzedImage[] = [];
   isLoading: boolean = false;
+  selectedModel: 'flash' | 'pro' = 'flash';
 
   constructor(private googleAiService: GoogleAiService) {}
 
-  onFileSelected(event: any){
-    const file = event.target.files[0];
-    if(file){
+  onFileSelected(event: any) {
+    const files = event.target.files;
+    if (files.length === 0) return;
+
+    this.isLoading = true;
+
+    Array.from(files).forEach((file: any) => {
       const reader = new FileReader();
       reader.onload = async () => {
-        this.imageSrc = reader.result;
-        this.isLoading = true;
-        
+        const imageSrc = reader.result;
         const base64Image = (reader.result as string).split(',')[1];
-        this.analysisResult = await this.googleAiService.analyzeImage(base64Image);
-        
+
+        this.images.push({ src: imageSrc, result: 'Analizando...' });
+
+        const analysisResult = await this.googleAiService.analyzeImage(base64Image, this.selectedModel);
+
+        const imageIndex = this.images.findIndex(img => img.src === imageSrc);
+        if (imageIndex !== -1) {
+          this.images[imageIndex].result = analysisResult;
+        }
+
         this.isLoading = false;
       };
       reader.readAsDataURL(file);
-    }
+    });
   }
+
+  changeModel(event: Event) {
+    const target = event.target as HTMLSelectElement; 
+    this.selectedModel = target.value as 'flash' | 'pro';
+  }
+  
 }
